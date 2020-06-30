@@ -13,10 +13,10 @@ export default {
       return 'smtp.qq.com'
     },
     get user() {
-      return '**@qq.com'
+      return '879628926@qq.com'
     },
     get pass() {
-      return ''
+      return 'llqzqocxccfrbbec'
     },
     get code() {
       return () => {

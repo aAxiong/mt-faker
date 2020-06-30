@@ -21,23 +21,22 @@ router.post('/signup', async (ctx) => {
   } = ctx.request.body;
 
   if (code) {
-    // const saveCode = await Store.hget(`nodemail:${username}`, 'code')
+    const saveCode = await Store.hget(`nodemail:${username}`, 'code')
     const saveExpire = await Store.hget(`nodemail:${username}`, 'expire')
-    // if (code === saveCode) {
-    if (new Date().getTime() - saveExpire > 0) {
+    if (code === saveCode) {
+      if (new Date().getTime() - saveExpire > 0) {
+        ctx.body = {
+          code: -1,
+          msg: '验证码已过期，请重新尝试'
+        }
+        return false
+      }
+    } else {
       ctx.body = {
         code: -1,
-        msg: '验证码已过期，请重新尝试'
+        msg: '请填写正确的验证码'
       }
-      return false
     }
-    // } 
-    // else {
-    //   ctx.body = {
-    //     code: -1,
-    //     msg: '请填写正确的验证码'
-    //   }
-    // }
   } else {
     ctx.body = {
       code: -1,

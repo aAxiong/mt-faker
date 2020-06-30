@@ -145,7 +145,7 @@ export default {
             email: self.ruleForm.email
           })
           .then(({ status, data }) => {
-            if ((status === 200 && data && data, cpde === 0)) {
+            if ((status === 200 && data && data.code === 0)) {
               let count = 60;
               self.statusMsg = `验证码已发送,剩余${count--}秒`;
               self.timerid = setInterval(function() {
@@ -164,12 +164,27 @@ export default {
       let self = this;
       this.$refs["ruleForm"].validate(valid => {
         if (valid) {
-          self.$axios.post("/user/signup", {
-            username: window.encodeURI(self.ruleForm.name),
-            password: CryptoJs.MD5(self.ruleForm.pwd).toString(),
-            email: self.ruleForm.email,
-            code: self.ruleForm.code
-          });
+          self.$axios
+            .post("/users/signup", {
+              username: window.encodeURI(self.ruleForm.name),
+              password: CryptoJs.MD5(self.ruleForm.pwd).toString(),
+              email: self.ruleForm.email,
+              code: self.ruleForm.code
+            })
+            .then(({ status, data }) => {
+              if (status === 200) {
+                if (data && data.code === 0) {
+                  location.href = "/login";
+                } else {
+                  self.error = data.msg;
+                }
+              } else {
+                self.error = `服务器出错，错误码:${status}`;
+              }
+              setTimeout(function() {
+                self.error = "";
+              }, 1500);
+            });
         }
       });
     }
