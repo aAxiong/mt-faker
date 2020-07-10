@@ -6,24 +6,30 @@
       </el-col>
       <el-col :span="15" class="center">
         <div class="wrapper">
-          <el-input placeholder="搜索商家或地点" v-model="search" @focus="focus" @blur="blur" @input="input"></el-input>
+          <el-input
+            placeholder="搜索商家或地点"
+            v-model="search"
+            @focus="focus"
+            @blur="blur"
+            @input="input"
+          ></el-input>
           <button class="el-button el-button--primary">
             <i class="el-icon-search"></i>
           </button>
           <dl class="hotPlace" v-if="isHotPlace">
             <dt>热门搜索</dt>
-            <dd v-for="(item,idx) in hotPlace" :key="idx">{{item}}</dd>
+            <dd v-for="(item,idx) in $store.state.home.hotPlace.slice(0,5)" :key="idx">{{item.name}}</dd>
           </dl>
           <dl class="searchList" v-if="isSearchList">
-            <dd v-for="(item,idx) in searchList" :key="idx">{{item}}</dd>
+            <dd v-for="(item,idx) in searchList" :key="idx">{{item.name}}</dd>
           </dl>
         </div>
         <p class="suggset">
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
+          <a
+            href="#"
+            v-for="(item,idx) in $store.state.home.hotPlace.slice(0,5)"
+            :key="idx"
+          >{{item.name}}</a>
         </p>
         <ul class="nav">
           <li>
@@ -64,13 +70,14 @@
 </template>
 
 <script>
+import _ from "lodash";
 export default {
   data() {
     return {
       search: "",
       isFocus: false,
-      hotPlace: ["火锅", "火锅", "火锅", "火锅", "火锅"],
-      searchList: ["故宫", "故宫", "故宫"]
+      hotPlace: [],
+      searchList: []
     };
   },
   computed: {
@@ -91,9 +98,21 @@ export default {
         self.isFocus = false;
       }, 200);
     },
-    input: function() {
-        console.log("input")
-    }
+    input: _.debounce(async function() {
+      let self = this;
+      let city = self.$store.state.geo.position.city.replace("市", "");
+      self.searchList = [];
+      let {
+        status,
+        data: { top }
+      } = await self.$axios.get("/search/top", {
+        params: {
+          input: self.search,
+          city
+        }
+      });
+      self.searchList = top.slice(0, 10);
+    }, 300)
   }
 };
 </script>

@@ -97,7 +97,7 @@ router.get('/city', async (ctx) => {
     data: {
       city
     }
-  } = await axios.get(`http://cp-tools.cn/geo/city?sign=${sign}`);
+  } = await axios.get(`http://cp-tools.cn/geo/city`);
   if (status === 200) {
     ctx.body = {
       city
@@ -135,7 +135,7 @@ router.get('/hotCity', async (ctx) => {
     data: {
       hots
     }
-  } = await axios.get(`http://cp-tools.cn/geo/hotCity?sign=${sign}`);
+  } = await axios.get(`http://cp-tools.cn/geo/hotCity`);
   if (status === 200) {
     ctx.body = {
       hots
